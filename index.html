@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ruhan Khanna — Around the World in 12 Cities</title>
+  <meta name="description" content="One kid. Four languages. A scroll-driven journey around the globe through the cities of Ruhan Khanna's life." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%88%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin />
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&display=swap" rel="stylesheet" />
+  <style>
+    html { background: #070a1c; }
+    #loader { position: fixed; inset: 0; z-index: 90; background: #070a1c; display: flex; align-items: center; justify-content: center; }
+  </style>
+</head>
+<body data-accent="hero">
+
+  <!-- ============ LOADER ============ -->
+  <div id="loader" aria-hidden="true">
+    <div class="loader-inner">
+      <div class="loader-passport">
+        <div class="loader-passport-emblem">✈</div>
+        <div class="loader-passport-title">PASSPORT</div>
+        <div class="loader-passport-name">KHANNA / RUHAN</div>
+        <div class="loader-stamp">CLEARED<br /><span>FOR TAKEOFF</span></div>
+      </div>
+      <div class="loader-track">
+        <svg class="loader-plane" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+        <div class="loader-bar"><i></i></div>
+      </div>
+      <div class="loader-pct">00%</div>
+    </div>
+  </div>
+
+  <!-- ============ FIXED LAYERS ============ -->
+  <canvas id="globe-canvas" aria-hidden="true"></canvas>
+  <div id="flatmap-wrap" aria-hidden="true"><canvas id="flatmap-canvas"></canvas></div>
+  <div id="vignette" aria-hidden="true"></div>
+  <div id="grain" aria-hidden="true"></div>
+
+  <div id="cursor" aria-hidden="true">
+    <div id="cursor-dot"></div>
+    <div id="cursor-ring"><span id="cursor-label"></span></div>
+  </div>
+
+  <!-- ============ CHROME ============ -->
+  <header id="site-header">
+    <a class="brand" href="#hero" data-hover data-cursor-label="TOP">
+      <span class="brand-mark">RK</span>
+      <span class="brand-sub">AROUND&nbsp;THE&nbsp;WORLD</span>
+    </a>
+    <button id="passport-btn" data-hover data-cursor-label="OPEN" aria-label="Open passport navigation">
+      <span class="passport-btn-book">
+        <span class="passport-btn-emblem">✈</span>
+        <span class="passport-btn-label">PASSPORT</span>
+      </span>
+      <span id="passport-count">0/12</span>
+    </button>
+  </header>
+
+  <div id="progress-rail" aria-hidden="true">
+    <div class="rail-line"></div>
+    <div class="rail-ticks"></div>
+    <svg id="rail-plane" viewBox="0 0 24 24"><path d="M21 16v-2l-8-5V3.5a1.5 1.5 0 0 0-3 0V9l-8 5v2l8-2.5V19l-2 1.5V22l3.5-1 3.5 1v-1.5L13 19v-5.5l8 2.5z"/></svg>
+  </div>
+
+  <div id="odometer" aria-hidden="true">
+    <span class="odo-label">DISTANCE&nbsp;TRAVELED</span>
+    <span class="odo-value"><span id="odo-num">0</span> km</span>
+  </div>
+
+  <!-- ============ PASSPORT OVERLAY ============ -->
+  <div id="passport-overlay" hidden>
+    <div class="passport-backdrop" data-close-passport></div>
+    <div class="passport-book" role="dialog" aria-modal="true" aria-label="Passport — jump to a city">
+      <button class="passport-close" data-close-passport data-hover data-cursor-label="CLOSE" aria-label="Close passport">✕</button>
+      <div class="passport-page passport-page--id">
+        <div class="pp-head">REPUBLIC OF CURIOSITY · TYPE P</div>
+        <div class="pp-emblem">✈</div>
+        <div class="pp-row"><span>SURNAME</span><b>KHANNA</b></div>
+        <div class="pp-row"><span>GIVEN NAME</span><b>RUHAN</b></div>
+        <div class="pp-row"><span>PLACE OF BIRTH</span><b>BOMBAY, IN</b></div>
+        <div class="pp-row"><span>LANGUAGES</span><b>EN · HI · ES · FR</b></div>
+        <div class="pp-row"><span>OCCUPATION</span><b>BUILDER OF THINGS</b></div>
+        <div class="pp-mrz">P&lt;CURKHANNA&lt;&lt;RUHAN&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;<br />RK12CITIES4LANGS&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;&lt;</div>
+      </div>
+      <div class="passport-page passport-page--stamps">
+        <div class="pp-head">ENTRY STAMPS — CLICK TO REVISIT</div>
+        <div class="stamp-grid" id="stamp-grid"><!-- stamps injected by JS --></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ MAIN NARRATIVE ============ -->
+  <main id="main">
+
+    <!-- 00 · HERO -->
+    <section id="hero" class="hero" data-city="bombay">
+      <div class="hero-stage">
+        <div class="hero-copy">
+          <p class="hero-kicker"><span class="blink">●</span> NOW BOARDING · STOP 00/12</p>
+          <h1 class="hero-title" aria-label="Ruhan Khanna">
+            <span class="ht-line" data-split>RUHAN</span>
+            <span class="ht-line ht-line--outline" data-split>KHANNA</span>
+          </h1>
+          <p class="hero-sub">One kid. Four languages.<br />A journey across <b>12 cities</b>.</p>
+
+          <button class="ticket" id="begin-btn" data-hover data-cursor-label="LET'S GO">
+            <span class="ticket-main">
+              <span class="ticket-head">RK&nbsp;AIR · BOARDING&nbsp;PASS</span>
+              <span class="ticket-cta">BEGIN THE TRIP <i class="ticket-arrow">↓</i></span>
+              <span class="ticket-meta">
+                <span><b>FROM</b>BOM</span>
+                <span><b>TO</b>EVERYWHERE</span>
+                <span><b>SEAT</b>4L</span>
+                <span><b>GATE</b>12</span>
+              </span>
+            </span>
+            <span class="ticket-stub">
+              <span class="ticket-barcode"></span>
+              <span class="ticket-stub-code">RK-001</span>
+            </span>
+          </button>
+        </div>
+      </div>
+      <div class="scroll-cue" aria-hidden="true">
+        <svg viewBox="0 0 120 40">
+          <path class="cue-path" d="M4 34 C 40 34, 70 30, 112 6" fill="none" stroke-dasharray="1 6" stroke-linecap="round" />
+          <g class="cue-plane"><path d="M0 0 l-9 4 2-4 -2-4 z" /></g>
+        </svg>
+        <span>SCROLL</span>
+      </div>
+    </section>
+
+    <!-- 01 · BOMBAY -->
+    <section id="bombay" class="chapter chapter--std" data-city="bombay">
+      <div class="ch-stage">
+        <div class="ch-visual ch-visual--bombay" aria-hidden="true">
+          <div class="cipher-row"><!-- tiles injected by JS --></div>
+        </div>
+        <header class="ch-head">
+          <p class="ch-kicker">STOP 01/12 · WHERE IT ALL BEGAN · b. 2009</p>
+          <h2 class="ch-title" data-split-words>BOMBAY</h2>
+          <p class="ch-greeting">नमस्ते — said first, meant always.</p>
+        </header>
+        <article class="ch-card" data-side="right">
+          <p class="card-body">Born here, 2009. Family, noise, festivals, and a first language that still sounds like home. When I went looking for a research project of my own, I reached all the way back — about four thousand years back.</p>
+          <p class="card-body"><b>Indus Script Decipherment</b>: computational linguistics chipping away at an ancient, unread script from the Indus Valley. Published in the <b>International Journal of Computer Applications</b> (Vol. 187, Dec 2025), backed by a <b>$5K Emergent Ventures grant</b> from Tyler Cowen / the Thiel Foundation.</p>
+          <p class="card-body card-body--em">My story starts in India. So does my first published paper.</p>
+          <ul class="chips"><li>PUBLISHED · IJCA VOL. 187</li><li>$5K EMERGENT VENTURES</li><li>COMPUTATIONAL LINGUISTICS</li></ul>
+          <div class="img-slot" data-note="PHOTO SLOT — family / research"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 02 · NEW YORK -->
+    <section id="nyc" class="chapter chapter--std" data-city="nyc">
+      <div class="ch-stage">
+        <div class="ch-visual ch-visual--nyc" aria-hidden="true">
+          <div class="nyc-skyline"><!-- buildings injected by JS --></div>
+          <div class="nyc-ticker"><span>RKX ▲ 4.20&nbsp;&nbsp;·&nbsp;&nbsp;JFK ▲ 0.09&nbsp;&nbsp;·&nbsp;&nbsp;CURIOSITY ▲ 999&nbsp;&nbsp;·&nbsp;&nbsp;DAD ▲ (ALWAYS)&nbsp;&nbsp;·&nbsp;&nbsp;TAXI ▬ YELLOW&nbsp;&nbsp;·&nbsp;&nbsp;AMBITION ▲ NEW HIGH&nbsp;&nbsp;·&nbsp;&nbsp;</span><span>RKX ▲ 4.20&nbsp;&nbsp;·&nbsp;&nbsp;JFK ▲ 0.09&nbsp;&nbsp;·&nbsp;&nbsp;CURIOSITY ▲ 999&nbsp;&nbsp;·&nbsp;&nbsp;DAD ▲ (ALWAYS)&nbsp;&nbsp;·&nbsp;&nbsp;TAXI ▬ YELLOW&nbsp;&nbsp;·&nbsp;&nbsp;AMBITION ▲ NEW HIGH&nbsp;&nbsp;·&nbsp;&nbsp;</span></div>
+        </div>
+        <header class="ch-head">
+          <p class="ch-kicker">STOP 02/12 · FIRST LANDING</p>
+          <h2 class="ch-title" data-split-words>NEW YORK</h2>
+          <p class="ch-greeting">Hello — new alphabet, same ambition.</p>
+        </header>
+        <article class="ch-card" data-side="left">
+          <p class="card-body">We landed here from Bombay when I was small: the biggest city in the world, seen from knee height. Everything moved. Everyone was building something.</p>
+          <p class="card-body">It's also where markets stopped being abstract — <b>my dad worked in finance</b>, and the numbers came home in dinner-table stories. Some part of me started keeping score early. That thread runs through everything ahead: the investment clubs, the trading desk, the VC research.</p>
+          <p class="card-body card-body--em">First landing. First taste of the game.</p>
+          <div class="img-slot" data-note="PHOTO SLOT — tiny me, tall city"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 03 · McALLEN -->
+    <section id="mcallen" class="chapter chapter--std" data-city="mcallen">
+      <div class="ch-stage">
+        <div class="ch-visual ch-visual--mcallen" aria-hidden="true">
+          <svg viewBox="0 0 900 500" preserveAspectRatio="xMidYMid slice">
+            <circle class="rio-sun" cx="700" cy="150" r="70" />
+            <path class="rio-river" d="M-20 320 C 180 280, 300 380, 480 340 C 660 300, 760 380, 920 340" />
+            <g class="rio-bridge">
+              <path class="rio-bridge-arc" d="M330 330 Q 450 220 570 330" />
+              <line x1="330" y1="330" x2="570" y2="330" />
+              <line x1="390" y1="330" x2="390" y2="281" /><line x1="450" y1="330" x2="450" y2="266" /><line x1="510" y1="330" x2="510" y2="281" />
+            </g>
+            <text class="rio-label" x="450" y="415" text-anchor="middle">RÍO GRANDE</text>
+          </svg>
+        </div>
+        <header class="ch-head">
+          <p class="ch-kicker">STOP 03/12 · THE DETOUR THAT STUCK · MIDDLE SCHOOL</p>
+          <h2 class="ch-title" data-split-words>McALLEN</h2>
+          <p class="ch-greeting">Bienvenidos — the first time Spanish was a tool, not a class.</p>
+        </header>
+        <article class="ch-card" data-side="right">
+          <p class="card-body">A middle-school service trip to the Rio Grande Valley. I expected a week of community service. I got a crash course in what a border actually is: families mid-paperwork, kids my age translating for their parents, systems that worked better on paper than in person.</p>
+          <p class="card-body">It rearranged something. Immigration stopped being just my family's story and became something I wanted to <b>work on</b>.</p>
+          <p class="card-tease">Hold that thought until Washington — this seed grows into IROC. →</p>
+          <div class="img-slot" data-note="PHOTO SLOT — service trip"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 04 · WASHINGTON DC — THE BIG CHAPTER -->
+    <section id="dc" class="chapter chapter--dc" data-city="dc">
+      <div class="dc-stage">
+
+        <div class="dc-map" id="dc-map" aria-hidden="true">
+          <svg id="dmv-svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <filter id="pinGlow" x="-80%" y="-80%" width="260%" height="260%">
+                <feGaussianBlur stdDeviation="6" result="b" />
+                <feMerge><feMergeNode in="b" /><feMergeNode in="SourceGraphic" /></feMerge>
+              </filter>
+              <radialGradient id="mapHalo" cx="50%" cy="46%" r="62%">
+                <stop offset="0%" stop-color="#16204d" />
+                <stop offset="70%" stop-color="#0a0f2c" />
+                <stop offset="100%" stop-color="#070a1c" stop-opacity="0" />
+              </radialGradient>
+              <pattern id="mapDots" width="34" height="34" patternUnits="userSpaceOnUse">
+                <circle cx="2" cy="2" r="1.1" fill="#2b3a7a" opacity=".38" />
+              </pattern>
+            </defs>
+
+            <g id="dmv-zoom">
+              <rect x="-400" y="-300" width="2000" height="1400" fill="url(#mapHalo)" />
+              <rect x="-400" y="-300" width="2000" height="1400" fill="url(#mapDots)" />
+
+              <g class="map-parks" opacity=".1">
+                <ellipse cx="560" cy="120" rx="120" ry="46" fill="#c6f24e" />
+                <ellipse cx="905" cy="560" rx="140" ry="52" fill="#c6f24e" />
+                <ellipse cx="180" cy="260" rx="110" ry="48" fill="#c6f24e" />
+              </g>
+
+              <ellipse class="beltway" cx="600" cy="390" rx="405" ry="315" />
+              <text class="map-road-label" x="600" y="58" text-anchor="middle">I-495 · THE BELTWAY</text>
+
+              <path class="potomac potomac-base" d="M340 40 C 420 170, 465 255, 525 330 C 585 405, 645 415, 662 520 C 680 625, 745 700, 830 780" />
+              <path class="potomac potomac-flow" d="M340 40 C 420 170, 465 255, 525 330 C 585 405, 645 415, 662 520 C 680 625, 745 700, 830 780" />
+              <text class="map-water-label" x="452" y="238" transform="rotate(52 452 238)">POTOMAC RIVER</text>
+
+              <path class="dc-diamond" d="M640 290 L740 390 L640 490 L540 390 Z" />
+              <text class="map-area-label" x="668" y="446">D.C.</text>
+
+              <g class="map-doodle" transform="translate(650 545)">
+                <path d="M11 8V7l-4-2.5V1.7a.8.8 0 0 0-1.6 0V4.5L1.4 7v1l4-1.2V9.5l-1 .8V11l1.8-.5 1.8.5v-.7l-1-.8V6.8l4 1.2z" transform="scale(2.2)" />
+                <text x="14" y="38">DCA</text>
+              </g>
+
+              <g class="map-compass" transform="translate(1090 120)">
+                <circle r="26" />
+                <path d="M0 -18 L5 6 L0 2 L-5 6 Z" class="compass-n" />
+                <text y="44" text-anchor="middle">N</text>
+              </g>
+
+              <path class="hop" id="hop-sidwell-athletiq" d="M585 330 Q 540 270 505 240" />
+              <path class="hop" id="hop-athletiq-secret" d="M505 240 Q 580 290 612 360" />
+              <path class="hop" id="hop-secret-umd" d="M612 360 Q 730 290 830 265" />
+              <path class="hop" id="hop-umd-gmu" d="M830 265 Q 560 480 278 530" />
+              <path class="hop" id="hop-gmu-iroc" d="M278 530 Q 390 500 502 462" />
+
+              <g class="dpin" id="dpin-sidwell" transform="translate(585 330)">
+                <circle class="dpin-pulse" r="10" /><circle class="dpin-core" r="7" />
+                <text class="dpin-label" x="16" y="5">SIDWELL FRIENDS</text>
+              </g>
+              <g class="dpin" id="dpin-athletiq" transform="translate(505 240)">
+                <circle class="dpin-pulse" r="10" /><circle class="dpin-core" r="7" />
+                <text class="dpin-label" x="16" y="5">ATHLETIQ HQ</text>
+              </g>
+              <g class="dpin" id="dpin-secret" transform="translate(612 360)">
+                <circle class="dpin-pulse" r="10" /><circle class="dpin-core" r="7" />
+                <text class="dpin-label" x="16" y="5">THE RACE SHOP</text>
+              </g>
+              <g class="dpin" id="dpin-umd" transform="translate(830 265)">
+                <circle class="dpin-pulse" r="10" /><circle class="dpin-core" r="7" />
+                <text class="dpin-label" x="16" y="5">UMD · COLLEGE PARK</text>
+              </g>
+              <g class="dpin" id="dpin-gmu" transform="translate(278 530)">
+                <circle class="dpin-pulse" r="10" /><circle class="dpin-core" r="7" />
+                <text class="dpin-label" x="16" y="5">GEORGE MASON</text>
+              </g>
+              <g class="dpin" id="dpin-iroc" transform="translate(502 462)">
+                <circle class="dpin-pulse" r="10" /><circle class="dpin-core" r="7" />
+                <text class="dpin-label" x="16" y="5">IROC</text>
+              </g>
+
+              <g class="map-title-chip" transform="translate(96 700)">
+                <rect x="-14" y="-26" rx="8" width="248" height="42" />
+                <text y="2">THE D.M.V. — FIELD MAP</text>
+              </g>
+            </g>
+          </svg>
+        </div>
+
+        <div class="dc-cards">
+
+          <article class="dc-card dc-card--intro" data-stop="intro">
+            <p class="card-kicker">STOP 04/12 · HOME BASE · 38.9072° N, 77.0369° W</p>
+            <h2 class="dc-title" data-split-words>WASHINGTON,&nbsp;DC</h2>
+            <p class="card-greeting">“Hello!” — we’ll say it four ways before this trip is over.</p>
+            <p class="card-body">Every journey needs a home base. Mine comes with a beltway. School, a startup, a race team, research gigs, and an unreasonable amount of tennis — nearly everything I’ve built lives inside this loop.</p>
+            <p class="card-body card-body--em">Let’s zoom in. There’s a lot.</p>
+          </article>
+
+          <article class="dc-card" data-stop="sidwell" data-side="right">
+            <p class="card-kicker">01 · THE HALLWAYS</p>
+            <h3 class="card-title" data-split-words>Sidwell Friends</h3>
+            <p class="card-body">By day: the most advanced coursework track I could get my hands on — advanced math, physics, Spanish — at a 3.94 unweighted GPA. The science department picked me to tutor physics. My classmates picked me for the Honor Committee, three years running.</p>
+            <p class="card-body">After the last bell it gets busier: leading our Wharton Investment Competition team, co-heading Spanish Club, and haunting the math, CS, and investment clubs.</p>
+            <ul class="chips">
+              <li>3.94 UW GPA</li><li>PHYSICS PEER TUTOR</li><li>HONOR COMMITTEE ×3</li><li>JANSSEN LEADERSHIP ACADEMY</li>
+            </ul>
+            <div class="tennis-block">
+              <div class="tennis-copy"><b>Varsity Tennis</b> — #5 in the nation, DC State Champions, Mid-Atlantic Conference Champions. Plus varsity cross country, because apparently I enjoy running in circles.</div>
+              <div class="tennis-court" id="tennis-court" data-hover data-cursor-label="RALLY!">
+                <div class="tennis-net"></div>
+                <div class="tennis-ball" id="tennis-ball"></div>
+                <div class="tennis-hint">tap the ball · keep the rally alive</div>
+                <div class="tennis-rally" id="tennis-rally">RALLY ×<b>0</b></div>
+              </div>
+            </div>
+            <div class="img-slot" data-note="PHOTO SLOT — team / campus"></div>
+          </article>
+
+          <article class="dc-card" data-stop="athletiq" data-side="left">
+            <p class="card-kicker">02 · THE STARTUP</p>
+            <h3 class="card-title" data-split-words>athletIQ</h3>
+            <p class="card-role">FOUNDER &amp; CEO · JUL 2023 → NOW</p>
+            <p class="card-body">The first-ever recruitment analytics platform for college track &amp; field. I built the mathematical rating model, engineered the site, and did the unglamorous business development myself.</p>
+            <p class="card-body">Now it’s signed with NCAA programs — including <b>Stanford</b> and <b>UNC</b> — and backed by <b>$8K</b> from Microsoft and AWS.</p>
+            <div class="iq-dash" aria-hidden="true">
+              <div class="iq-bars">
+                <i style="--h:.35"></i><i style="--h:.62"></i><i style="--h:.48"></i><i style="--h:.85"></i><i style="--h:.7"></i><i style="--h:1"></i>
+              </div>
+              <div class="iq-stats">
+                <div class="iq-stat"><b><span data-count="8">0</span>K</b><span>MSFT × AWS FUNDING ($)</span></div>
+                <div class="iq-stat"><b>NCAA</b><span>STANFORD · UNC SIGNED</span></div>
+                <div class="iq-stat"><b>№1</b><span>FIRST IN THE SPORT</span></div>
+              </div>
+            </div>
+            <div class="img-slot" data-note="PHOTO SLOT — product dashboard"></div>
+          </article>
+
+          <article class="dc-card" data-stop="secret" data-side="right">
+            <p class="card-kicker">03 · THE RACE SHOP</p>
+            <h3 class="card-title" data-split-words>SECRET</h3>
+            <p class="card-role">SIDWELL ELECTRIC CAR RACE ENGINEERING TEAM · FOUNDER &amp; PRESIDENT · SEP 2023 → NOW</p>
+            <p class="card-body">We built a fully electric go-kart-class race car from scratch — and I raised the <b>$7K</b> that paid for it. Podiums at the <b>’24, ’25 and ’26 DC Grand Prix</b> (plus the top 3D-printing prize) earned us an invite to the <b>2027 Dubai Grand Prix</b>.</p>
+            <div class="podium" aria-hidden="true">
+              <div class="podium-col podium-col--2"><span class="podium-year">’25</span><i>2</i></div>
+              <div class="podium-col podium-col--1"><span class="podium-kart">🏎</span><span class="podium-year">’26</span><i>1</i></div>
+              <div class="podium-col podium-col--3"><span class="podium-year">’24</span><i>3</i></div>
+            </div>
+            <ul class="chips chips--red"><li>$7K RAISED</li><li>TOP 3D-PRINTING PRIZE</li><li>DXB 2027 · INVITED</li></ul>
+            <p class="card-tease">Where did the obsession start? Hold that thought until <b>Maranello</b> →</p>
+          </article>
+
+          <article class="dc-card dc-card--aside" data-stop="umd" data-side="left">
+            <p class="card-kicker">03½ · SIDE QUEST · COLLEGE PARK</p>
+            <h3 class="card-title" data-split-words>SECRET × Maryland FSAE</h3>
+            <p class="card-body">Our engineering partnership with the University of Maryland’s Formula SAE team — high schoolers wrenching alongside a collegiate race crew. We borrowed their brains; they kept our welds straight.</p>
+          </article>
+
+          <article class="dc-card" data-stop="gmu" data-side="right">
+            <p class="card-kicker">04 · THE LAB, PART ONE</p>
+            <h3 class="card-title" data-split-words>George Mason</h3>
+            <p class="card-role">ASSIP RESEARCH INTERN · 2025 · 9% ACCEPTANCE</p>
+            <p class="card-body">FinTech research under Prof. Jiasun Li: verifying academic papers with <b>Intel TDX</b> — trusted hardware, checking the math — plus on-chain analysis of real-world-asset token transactions. Published abstract.</p>
+            <div class="tdx" aria-hidden="true">
+              <div class="tdx-line"><span class="tdx-prompt">$</span> tdx --attest paper.pdf</div>
+              <div class="tdx-line tdx-line--chain"><i></i><i></i><i></i><i></i><i></i><i></i></div>
+              <div class="tdx-line tdx-ok"><svg viewBox="0 0 24 24"><path class="tdx-check" d="M4 12.5 L10 18 L20 6" fill="none"/></svg> VERIFIED · enclave signature valid</div>
+            </div>
+          </article>
+
+          <article class="dc-card" data-stop="iroc" data-side="left">
+            <p class="card-kicker">05 · FULL CIRCLE</p>
+            <h3 class="card-title" data-split-words>IROC</h3>
+            <p class="card-role">IMMIGRANT &amp; REFUGEE OUTREACH CENTER · COUNSELOR + BACKEND ENGINEER</p>
+            <p class="card-body">Remember McAllen? At IROC, that seed became a job with two halves. Front of house: summer camp counselor and tutor for refugee youth across the DMV. Back of house: I engineer the <b>data backend that powers IROC’s resource directory</b> for immigrant and refugee families — the plumbing that connects people to help.</p>
+            <p class="card-body card-body--em">Different flights. Same first-day-of-school feeling.</p>
+            <div class="img-slot" data-note="PHOTO SLOT — camp summer"></div>
+          </article>
+
+          <div class="dc-honors" data-stop="honors">
+            <p class="card-kicker card-kicker--center">STAMPED &amp; CERTIFIED</p>
+            <div class="honor-row">
+              <div class="honor-stamp"><b>AMC 8</b><span>HONOR ROLL</span><em>MAA</em></div>
+              <div class="honor-stamp"><b>MATHCOUNTS</b><span>DC STATE · 7TH</span><em>individual</em></div>
+              <div class="honor-stamp honor-stamp--tease"><b>ONE ESSAY</b><span>NOW BOARDING → LHR</span><em>see you in London</em></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- 05 · CHARLOTTESVILLE -->
+    <section id="cville" class="chapter chapter--std" data-city="cville">
+      <div class="ch-stage">
+        <div class="ch-visual ch-visual--cville" aria-hidden="true">
+          <svg id="uva-net" viewBox="0 0 900 560" preserveAspectRatio="xMidYMid meet"><!-- network injected by JS --></svg>
+        </div>
+        <header class="ch-head">
+          <p class="ch-kicker">STOP 05/12 · THE LAB</p>
+          <h2 class="ch-title" data-split-words>CHARLOTTESVILLE</h2>
+          <p class="ch-greeting">Wahoowa. (UVA makes you say it.)</p>
+        </header>
+        <article class="ch-card" data-side="right">
+          <p class="card-role">UVA SCHOOL OF DATA SCIENCE · LEAD RESEARCHER · JUL 2025 → NOW</p>
+          <p class="card-body">With Prof. Tashman, I lead research on an <b>LLM-supported ML ranking model</b> that measures economic frictions in the venture market — how founder identity, nationality, and stage quietly move funding outcomes.</p>
+          <p class="card-body">It’s not just a paper (though the paper’s in review). We deployed it with <b>434 Accelerator</b> and <b>BEA</b> to match underserved founders with investors, and presented at the 2026 UVA Undergraduate Research Symposium and <b>ICMBF 2026</b>.</p>
+          <p class="card-body card-body--em">Bias, measured. Then engineered against.</p>
+          <ul class="chips"><li>PAPER IN REVIEW</li><li>ICMBF 2026</li><li>434 × BEA DEPLOYMENTS</li></ul>
+          <div class="img-slot" data-note="PHOTO SLOT — symposium / lab"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 06 · LONDON -->
+    <section id="london" class="chapter chapter--std" data-city="london">
+      <div class="ch-stage">
+        <div class="ch-visual ch-visual--london" aria-hidden="true">
+          <div class="paper paper--1"></div>
+          <div class="paper paper--2"></div>
+          <div class="paper paper--3"></div>
+          <div class="typewriter"><span class="typewriter-text" data-type="How many people should there be?"></span><i class="typewriter-caret"></i></div>
+          <div class="wax-seal"><b>FINALIST</b><span>JOHN LOCKE INSTITUTE</span></div>
+        </div>
+        <header class="ch-head">
+          <p class="ch-kicker">STOP 06/12 · THE ESSAY TOUR</p>
+          <h2 class="ch-title" data-split-words>LONDON</h2>
+          <p class="ch-greeting">Alright? Brought regressions.</p>
+        </header>
+        <article class="ch-card" data-side="left">
+          <p class="card-role">JOHN LOCKE INSTITUTE · GLOBAL ESSAY PRIZE · FINALIST</p>
+          <p class="card-body">One of the world’s biggest student essay competitions, and my entry — an <b>econometrics essay on optimal global population</b> — made Finalist, which is how a Washington kid’s regression tables ended up celebrated in London.</p>
+          <p class="card-body">The question sounds philosophical: <i>how many people should there be?</i> My answer was mostly math — models, elasticities, standard errors — which is exactly why I loved it.</p>
+          <p class="card-body card-body--em">Bring an umbrella. Bring standard errors.</p>
+          <ul class="chips"><li>GLOBAL ESSAY PRIZE · FINALIST</li><li>ECONOMETRICS</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- 07 · PARIS -->
+    <section id="paris" class="chapter chapter--std" data-city="paris">
+      <div class="ch-stage">
+        <div class="ch-visual ch-visual--paris" aria-hidden="true">
+          <svg class="eiffel" viewBox="0 0 200 320">
+            <path class="eiffel-path" d="M100 10 C 96 90, 88 150, 62 240 M100 10 C 104 90, 112 150, 138 240 M70 200 Q 100 180 130 200 M52 260 Q 100 225 148 260 M40 300 Q 100 250 160 300" fill="none" />
+          </svg>
+          <div class="lang-cycler">
+            <span class="lang-word is-on" lang="en">HELLO</span>
+            <span class="lang-word" lang="hi">नमस्ते</span>
+            <span class="lang-word" lang="es">HOLA</span>
+            <span class="lang-word" lang="fr">BONJOUR</span>
+          </div>
+        </div>
+        <header class="ch-head">
+          <p class="ch-kicker">STOP 07/12 · FINDING MY VOICE · 2018</p>
+          <h2 class="ch-title" data-split-words>PARIS</h2>
+          <p class="ch-greeting">Bonjour — the trip that flipped the switch.</p>
+        </header>
+        <article class="ch-card" data-side="right">
+          <p class="card-body">A 2018 visit that turned French from a subject into a city running in real time. I’ve taken <b>advanced French at the International School of Languages since 4th grade</b> — stacked on top of the advanced Spanish track at school.</p>
+          <p class="card-body">Four languages — English, Hindi, Spanish, French — aren’t a party trick. They’re four different ways of seeing the same thing.</p>
+          <p class="card-body card-body--em">Same kid. Four operating systems.</p>
+          <ul class="chips"><li>ISL FRENCH · SINCE 4TH GRADE</li><li>ADVANCED SPANISH TRACK</li><li>EN · HI · ES · FR</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- 08 · SEVILLA -->
+    <section id="sevilla" class="chapter chapter--std" data-city="sevilla">
+      <div class="ch-stage">
+        <div class="ch-visual ch-visual--sevilla" aria-hidden="true">
+          <div class="fan-row"><!-- fans injected by JS --></div>
+        </div>
+        <header class="ch-head">
+          <p class="ch-kicker">STOP 08/12 · EN ESPAÑOL</p>
+          <h2 class="ch-title" data-split-words>SEVILLA</h2>
+          <p class="ch-greeting">Hola — the language that became a bridge.</p>
+        </header>
+        <article class="ch-card" data-side="left">
+          <p class="card-body">The Spanish side of the thread: the advanced track at school, co-heading <b>Spanish Club</b>, and — the part that matters — volunteering with <b>Central American refugee youth</b>, where Spanish stopped being homework and became the bridge across somebody’s hardest week.</p>
+          <p class="card-body card-body--em">A subject becomes a bridge. McAllen would be proud.</p>
+          <ul class="chips"><li>ADVANCED TRACK</li><li>SPANISH CLUB CO-HEAD</li><li>VOLUNTEER · REFUGEE YOUTH</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- 09 · MARANELLO -->
+    <section id="maranello" class="chapter chapter--std" data-city="maranello">
+      <div class="ch-stage">
+        <div class="ch-visual ch-visual--maranello" aria-hidden="true">
+          <div class="road"></div>
+          <div class="kart-run">
+            <div class="speed-lines"><i></i><i></i><i></i></div>
+            <svg class="kart" viewBox="0 0 120 60">
+              <path class="kart-body" d="M8 38 L28 36 L38 24 L64 22 L72 34 L106 36 L108 44 L6 46 Z" />
+              <circle class="kart-helmet" cx="52" cy="18" r="9" />
+              <rect class="kart-spoiler" x="8" y="26" width="14" height="5" rx="2" />
+              <circle class="kart-wheel" cx="30" cy="46" r="9" /><circle class="kart-hub" cx="30" cy="46" r="3.5" />
+              <circle class="kart-wheel" cx="90" cy="46" r="9" /><circle class="kart-hub" cx="90" cy="46" r="3.5" />
+            </svg>
+          </div>
+        </div>
+        <header class="ch-head">
+          <p class="ch-kicker">STOP 09/12 · THE SPARK 🏎</p>
+          <h2 class="ch-title" data-split-words>MARANELLO</h2>
+          <p class="ch-greeting">Ciao — and then, engines.</p>
+        </header>
+        <article class="ch-card" data-side="right">
+          <p class="card-body">I stood in Ferrari’s hometown, heard a V12 clear its throat, and lost the plot in the best possible way. I went home and founded <b>SECRET</b> — Sidwell’s electric race team.</p>
+          <p class="card-body">You’ve already seen what happened next, back in Washington: podiums at three straight DC Grands Prix, a UMD engineering partnership, a car we built with our own hands.</p>
+          <p class="card-tease">Next stop for the team: <b>Dubai, 2027</b>. The arc is already drawn. →</p>
+          <ul class="chips chips--red"><li>SECRET · FOUNDED POST-TRIP</li><li>’24 ’25 ’26 PODIUMS</li><li>DXB 2027</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- 10 · LAS VEGAS -->
+    <section id="vegas" class="chapter chapter--std" data-city="vegas">
+      <div class="ch-stage">
+        <div class="ch-visual ch-visual--vegas" aria-hidden="true">
+          <div class="card-fan">
+            <div class="pcard" data-c="A♠"></div>
+            <div class="pcard pcard--red" data-c="K♥"></div>
+            <div class="pcard" data-c="Q♣"></div>
+            <div class="pcard pcard--red" data-c="J♦"></div>
+            <div class="pcard" data-c="10♠"></div>
+          </div>
+          <div class="dice-row">
+            <div class="die"><i></i><i></i><i></i><i></i><i></i></div>
+            <div class="die die--two"><i></i><i></i></div>
+          </div>
+          <div class="ev-formula">EV&nbsp;=&nbsp;Σ&nbsp;pᵢ&nbsp;·&nbsp;xᵢ</div>
+        </div>
+        <header class="ch-head">
+          <p class="ch-kicker">STOP 10/12 · THE ODDS</p>
+          <h2 class="ch-title" data-split-words>LAS VEGAS</h2>
+          <p class="ch-greeting">What happens here gets logged in a spreadsheet.</p>
+        </header>
+        <article class="ch-card" data-side="left">
+          <p class="card-body">Poker is the cheapest tuition in applied probability: expected value, pot odds, Bayesian updates on a stranger’s eyebrows. I play tight, I count, and I love every hand of it.</p>
+          <p class="card-body">It’s the same muscle as everything else on this trip — <b>game theory and statistics</b> are why I run investment clubs, why the trading desk clicked, why VC diligence feels like reading ranges.</p>
+          <p class="card-body card-body--em">EV &gt; 0 or fold. Works on cards. Works on life.</p>
+          <ul class="chips"><li>PROBABILITY</li><li>GAME THEORY</li><li>STATISTICS</li><li>POKER · TIGHT</li></ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- 11 · SAN FRANCISCO -->
+    <section id="sf" class="chapter chapter--std" data-city="sf">
+      <div class="ch-stage">
+        <div class="ch-visual ch-visual--sf" aria-hidden="true">
+          <svg class="gg-bridge" viewBox="0 0 900 360" preserveAspectRatio="xMidYMax meet">
+            <g class="gg-tower gg-tower--1"><rect x="228" y="60" width="10" height="240" /><rect x="256" y="60" width="10" height="240" /><rect x="222" y="90" width="50" height="8" /><rect x="222" y="150" width="50" height="8" /><rect x="222" y="215" width="50" height="8" /></g>
+            <g class="gg-tower gg-tower--2"><rect x="628" y="60" width="10" height="240" /><rect x="656" y="60" width="10" height="240" /><rect x="622" y="90" width="50" height="8" /><rect x="622" y="150" width="50" height="8" /><rect x="622" y="215" width="50" height="8" /></g>
+            <path class="gg-cable" d="M-10 190 Q 120 70 247 66 Q 447 210 647 66 Q 774 70 910 190" fill="none" />
+            <line class="gg-deck" x1="-10" y1="252" x2="910" y2="252" />
+            <g class="gg-hangers">
+              <line x1="120" y1="112" x2="120" y2="252" /><line x1="360" y1="150" x2="360" y2="252" /><line x1="447" y1="168" x2="447" y2="252" /><line x1="534" y1="150" x2="534" y2="252" /><line x1="774" y1="112" x2="774" y2="252" />
+            </g>
+          </svg>
+          <div class="fog fog--1"></div>
+          <div class="fog fog--2"></div>
+          <div class="fog fog--3"></div>
+        </div>
+        <header class="ch-head">
+          <p class="ch-kicker">STOP 11/12 · THE ARENA</p>
+          <h2 class="ch-title" data-split-words>SAN FRANCISCO</h2>
+          <p class="ch-greeting">Hey — fog in, thesis out.</p>
+        </header>
+        <article class="ch-card" data-side="right">
+          <p class="card-role">REACH CAPITAL · SUMMER ASSOCIATE INTERN · JUN–JUL 2026 · SELECTED 1 OF 800+</p>
+          <p class="card-body">Technical and market diligence on live pipeline deals, working directly with the investment partners. I designed founder-facing resources for portfolio companies like <b>Replit</b>, <b>Desmos</b>, and <b>GPTZero</b>, and externed with YC-backed <b>Dropback</b> and Sam Altman-backed <b>Campus.edu</b>.</p>
+          <p class="card-body">This is where the UVA research met the real thing — the frictions I’d been measuring in data, negotiated live in conference rooms.</p>
+          <p class="card-body card-body--em">The lab met the arena. Both won.</p>
+          <ul class="chips"><li>1 OF 800+</li><li>REPLIT · DESMOS · GPTZERO</li><li>DROPBACK · CAMPUS.EDU</li></ul>
+          <div class="img-slot" data-note="PHOTO SLOT — the office / the bridge"></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 12 · FINALE — globe zoom-out + Dubai teaser -->
+    <section id="finale" class="finale" data-city="dubai">
+      <div class="finale-stage">
+        <div class="finale-head">
+          <p class="ch-kicker">FINAL CALL · 2027 · مرحبا</p>
+          <h2 class="finale-title" data-split-words>NEXT STOP: DUBAI</h2>
+          <p class="finale-sub">The 2027 Dubai Grand Prix is on the calendar — SECRET’s biggest race yet.<br />The passport has room for one more stamp.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ARRIVALS — contact + skills + recap -->
+    <section id="arrival" class="arrival">
+      <div class="customs-card">
+        <div class="customs-head"><span>ARRIVAL CARD</span><span>FORM RK-2027 · ONE PER TRAVELER</span></div>
+        <div class="customs-grid">
+          <div class="customs-row"><span>PASSENGER</span><b>KHANNA / RUHAN</b></div>
+          <div class="customs-row"><span>PURPOSE OF VISIT</span><b>BUILDING THINGS</b></div>
+          <div class="customs-row"><span>LENGTH OF STAY</span><b>AS LONG AS IT TAKES</b></div>
+        </div>
+        <div class="customs-declare">
+          <span class="customs-declare-label">DECLARATIONS — SAY HELLO</span>
+          <div class="customs-links">
+            <a class="customs-link" href="mailto:ruhan.khanna.2009@gmail.com" data-hover data-cursor-label="WRITE">✉ EMAIL</a>
+            <a class="customs-link customs-link--soon" href="#" data-hover data-cursor-label="SOON">in LINKEDIN — LINK TBD</a>
+            <a class="customs-link customs-link--soon" href="#" data-hover data-cursor-label="SOON">⌥ GITHUB — LINK TBD</a>
+          </div>
+        </div>
+        <div class="customs-big">LET’S BUILD SOMETHING.</div>
+        <div class="customs-admitted">ADMITTED ✓</div>
+      </div>
+
+      <div class="tag-strip" aria-label="Skills">
+        <span class="lug-tag">PYTHON</span><span class="lug-tag">JAVA</span><span class="lug-tag">C++</span><span class="lug-tag">ARDUINO</span><span class="lug-tag">MATHEMATICA</span><span class="lug-tag">CAD</span><span class="lug-tag">3D PRINTING</span><span class="lug-tag">HTML/CSS</span><span class="lug-tag lug-tag--lang">ENGLISH</span><span class="lug-tag lug-tag--lang">हिन्दी</span><span class="lug-tag lug-tag--lang">ESPAÑOL</span><span class="lug-tag lug-tag--lang">FRANÇAIS</span>
+      </div>
+
+      <div class="dep-board" role="table" aria-label="Route recap">
+        <div class="dep-row dep-row--head" role="row"><span>FLT</span><span>DESTINATION</span><span></span><span>REMARK</span><span>STATUS</span></div>
+        <div class="dep-row" role="row"><span>RK-101</span><span>BOMBAY</span><span>BOM</span><span>where it all began</span><span class="dep-status dep-status--ok">ARRIVED</span></div>
+        <div class="dep-row" role="row"><span>RK-102</span><span>NEW YORK</span><span>JFK</span><span>first landing</span><span class="dep-status dep-status--ok">ARRIVED</span></div>
+        <div class="dep-row" role="row"><span>RK-103</span><span>McALLEN</span><span>MFE</span><span>the detour that stuck</span><span class="dep-status dep-status--ok">ARRIVED</span></div>
+        <div class="dep-row" role="row"><span>RK-104</span><span>WASHINGTON, DC</span><span>DCA</span><span>home base</span><span class="dep-status dep-status--ok">ARRIVED</span></div>
+        <div class="dep-row" role="row"><span>RK-105</span><span>CHARLOTTESVILLE</span><span>CHO</span><span>the lab</span><span class="dep-status dep-status--ok">ARRIVED</span></div>
+        <div class="dep-row" role="row"><span>RK-106</span><span>LONDON</span><span>LHR</span><span>the essay tour</span><span class="dep-status dep-status--ok">ARRIVED</span></div>
+        <div class="dep-row" role="row"><span>RK-107</span><span>PARIS</span><span>CDG</span><span>finding my voice</span><span class="dep-status dep-status--ok">ARRIVED</span></div>
+        <div class="dep-row" role="row"><span>RK-108</span><span>SEVILLA</span><span>SVQ</span><span>en español</span><span class="dep-status dep-status--ok">ARRIVED</span></div>
+        <div class="dep-row" role="row"><span>RK-109</span><span>MARANELLO</span><span>—</span><span>the spark · no airport, we drove</span><span class="dep-status dep-status--ok">ARRIVED</span></div>
+        <div class="dep-row" role="row"><span>RK-110</span><span>LAS VEGAS</span><span>LAS</span><span>the odds</span><span class="dep-status dep-status--ok">ARRIVED</span></div>
+        <div class="dep-row" role="row"><span>RK-111</span><span>SAN FRANCISCO</span><span>SFO</span><span>the arena</span><span class="dep-status dep-status--ok">ARRIVED</span></div>
+        <div class="dep-row dep-row--here" role="row"><span>RK-112</span><span>DUBAI</span><span>DXB</span><span>SECRET × grand prix 🏎</span><span class="dep-status dep-status--gold">SCHEDULED · 2027</span></div>
+      </div>
+
+      <footer class="site-footer">
+        <span>© 2026 RUHAN KHANNA</span>
+        <span>BUILT WITH AN UNREASONABLE LOVE OF MAPS</span>
+      </footer>
+    </section>
+
+  </main>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
