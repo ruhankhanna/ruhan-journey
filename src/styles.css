@@ -639,7 +639,8 @@ body[data-accent='dc'] { --accent: #3e6bff; }
 body[data-accent='cville'] { --accent: #ff8200; }
 body[data-accent='london'] { --accent: #e63946; }
 body[data-accent='paris'] { --accent: #4cc9f0; }
-body[data-accent='sevilla'] { --accent: #e2762d; }
+body[data-accent='madrid'] { --accent: #e2762d; }
+body[data-accent='orlando'] { --accent: #cdf000; }
 body[data-accent='maranello'] { --accent: #ff2e1f; }
 body[data-accent='vegas'] { --accent: #ff4d9d; }
 body[data-accent='sf'] { --accent: #ff6b35; }
@@ -739,8 +740,17 @@ body[data-accent='dubai'] { --accent: #f5c542; }
 }
 .lang-word.is-on { opacity: 1; color: #4cc9f0; -webkit-text-stroke: 0; }
 
-/* ---------- SEVILLA · flamenco fans ---------- */
-.ch-visual--sevilla { display: flex; align-items: flex-end; justify-content: flex-end; padding: 0 8vw 10vh 0; }
+/* ---------- MADRID · fans ---------- */
+.ch-visual--madrid { display: flex; align-items: flex-end; justify-content: flex-end; padding: 0 8vw 10vh 0; }
+
+/* ---------- ORLANDO · hard court ---------- */
+.ch-visual--orlando { display: grid; place-items: center; }
+.oc { width: min(50vw, 720px); margin-left: 24vw; opacity: .85; }
+.oc-line { stroke: #cdf000; fill: none; stroke-width: 3; }
+.oc-outer { fill: rgba(205, 240, 0, 0.04); }
+.oc-net { stroke: #f4efe2; stroke-width: 3; stroke-dasharray: 3 8; }
+.oc-arc { stroke: rgba(205, 240, 0, 0.6); stroke-width: 2.5; fill: none; }
+.oc-ball { fill: #cdf000; }
 .fan-row { display: flex; gap: 6vw; align-items: flex-end; }
 .fan { position: relative; width: 0; height: 200px; }
 .fan-blade {

@@ -290,7 +290,7 @@ const VISUALS = {
     return tl
   },
 
-  sevilla(section) {
+  madrid(section) {
     const rowEl = section.querySelector('.fan-row')
     const makeFan = (small) => {
       const fan = document.createElement('div')
@@ -315,6 +315,22 @@ const VISUALS = {
         ease: 'back.out(1.4)',
       }, fi * 6)
     })
+    tl.set({}, {}, 44)
+    return tl
+  },
+
+  orlando(section) {
+    const svg = section.querySelector('.oc')
+    const outer = svg.querySelector('.oc-outer')
+    const arc = svg.querySelector('.oc-arc')
+    const outerLen = 1600
+    const arcLen = 600
+    const tl = gsap.timeline({ paused: true, defaults: { ease: 'none' } })
+    tl.fromTo(outer, { strokeDasharray: outerLen, strokeDashoffset: outerLen }, { strokeDashoffset: 0, duration: 10, ease: 'power1.inOut' }, 0)
+    tl.fromTo(svg.querySelectorAll('.oc-inner'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 3, stagger: 1 }, 8)
+    tl.fromTo(svg.querySelector('.oc-net'), { autoAlpha: 0 }, { autoAlpha: 1, duration: 3 }, 13)
+    tl.fromTo(arc, { strokeDasharray: `${arcLen}`, strokeDashoffset: arcLen }, { strokeDashoffset: 0, duration: 10, ease: 'power1.inOut' }, 16)
+    tl.fromTo(svg.querySelectorAll('.oc-ball'), { scale: 0, transformOrigin: '50% 50%' }, { scale: 1, duration: 3, stagger: 2, ease: 'back.out(2.5)' }, 18)
     tl.set({}, {}, 44)
     return tl
   },
@@ -405,6 +421,16 @@ function buildChapter(city, globe) {
   if (visual) tl.to(visual, { autoAlpha: 0, duration: 6, ease: 'power2.in' }, 87)
   tl.set({}, {}, 100)
 
+  // the rally toy only runs while its chapter is on screen
+  if (city.id === 'orlando') {
+    ScrollTrigger.create({
+      trigger: section,
+      start: 'top 80%',
+      end: 'bottom 20%',
+      onToggle: (self) => (self.isActive ? tennis?.start() : tennis?.stop()),
+    })
+  }
+
   initChapterMeta(city.id, section)
 }
 
@@ -422,8 +448,6 @@ function trackStop(p) {
   if (stop === currentStop) return
   currentStop = stop
   setActiveStop(stop)
-  if (stop === 'sidwell') tennis?.start()
-  else tennis?.stop()
 }
 
 function buildDCTimeline(globe, hopDots) {
@@ -434,7 +458,7 @@ function buildDCTimeline(globe, hopDots) {
       scrub: 1, invalidateOnRefresh: true,
       onUpdate: (self) => trackStop(self.progress),
       onLeave: () => trackStop(1),
-      onLeaveBack: () => { trackStop(0); tennis?.stop() },
+      onLeaveBack: () => trackStop(0),
     },
   })
 

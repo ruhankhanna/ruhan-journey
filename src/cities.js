@@ -5,35 +5,37 @@
 export const CITIES = [
   { id: 'bombay',    code: 'BOM', name: 'Bombay',          lat: 19.076,   lon: 72.8777,   accent: '#ff5340', arrive: 2.5,  stampDate: 'EST. 2009' },
   { id: 'nyc',       code: 'JFK', name: 'New York',        lat: 40.7128,  lon: -74.006,   accent: '#ffd43b', arrive: 2.55, stampDate: 'FIRST LANDING' },
-  { id: 'mcallen',   code: 'MFE', name: 'McAllen',         lat: 26.2034,  lon: -98.23,    accent: '#06d6a0', arrive: 2.6,  stampDate: 'THE DETOUR' },
   { id: 'dc',        code: 'DCA', name: 'Washington, DC',  lat: 38.9072,  lon: -77.0369,  accent: '#3e6bff', arrive: 2.6, depart: 2.45, stampDate: 'HOME BASE' },
+  { id: 'madrid',    code: 'MAD', name: 'Madrid',          lat: 40.4168,  lon: -3.7038,   accent: '#e2762d', arrive: 2.5,  stampDate: 'EN ESPAÑOL' },
+  { id: 'mcallen',   code: 'MFE', name: 'McAllen',         lat: 26.2034,  lon: -98.23,    accent: '#06d6a0', arrive: 2.6,  stampDate: 'SERVICE TRIP' },
+  { id: 'orlando',   code: 'MCO', name: 'Orlando',         lat: 28.5383,  lon: -81.3792,  accent: '#cdf000', arrive: 2.55, stampDate: 'HARD COURTS' },
   { id: 'cville',    code: 'CHO', name: 'Charlottesville', lat: 38.0293,  lon: -78.4767,  accent: '#ff8200', arrive: 2.45, stampDate: 'THE LAB' },
   { id: 'london',    code: 'LHR', name: 'London',          lat: 51.5074,  lon: -0.1278,   accent: '#e63946', arrive: 2.5,  stampDate: 'FINALIST' },
   { id: 'paris',     code: 'CDG', name: 'Paris',           lat: 48.8566,  lon: 2.3522,    accent: '#4cc9f0', arrive: 2.45, stampDate: '2018' },
-  { id: 'sevilla',   code: 'SVQ', name: 'Sevilla',         lat: 37.3891,  lon: -5.9845,   accent: '#e2762d', arrive: 2.5,  stampDate: 'HOLA' },
   { id: 'maranello', code: 'MRN', name: 'Maranello',       lat: 44.5262,  lon: 10.8663,   accent: '#ff2e1f', arrive: 2.4,  stampDate: 'THE SPARK' },
   { id: 'vegas',     code: 'LAS', name: 'Las Vegas',       lat: 36.1699,  lon: -115.1398, accent: '#ff4d9d', arrive: 2.55, stampDate: 'EV > 0' },
-  { id: 'sf',        code: 'SFO', name: 'San Francisco',   lat: 37.7749,  lon: -122.4194, accent: '#ff6b35', arrive: 2.5,  stampDate: '1 OF 800+' },
+  { id: 'sf',        code: 'SFO', name: 'San Francisco',   lat: 37.7749,  lon: -122.4194, accent: '#ff6b35', arrive: 2.5,  stampDate: '2026' },
   { id: 'dubai',     code: 'DXB', name: 'Dubai',           lat: 25.2048,  lon: 55.2708,   accent: '#f5c542', arrive: 2.6,  future: true, stampDate: 'SCHEDULED 2027' },
 ]
 
 export const byId = Object.fromEntries(CITIES.map((c) => [c.id, c]))
 
 // journey order (dubai is a teaser pin, not a scroll stop)
-export const ROUTE = ['bombay', 'nyc', 'mcallen', 'dc', 'cville', 'london', 'paris', 'sevilla', 'maranello', 'vegas', 'sf']
+export const ROUTE = ['bombay', 'nyc', 'dc', 'madrid', 'mcallen', 'orlando', 'cville', 'london', 'paris', 'maranello', 'vegas', 'sf']
 
 // one-liners for the in-transit captions, keyed 'from-to'
 export const LEG_NOTES = {
-  'bombay-nyc':      'one way · a whole life in the overhead bin',
-  'nyc-mcallen':     'connecting flight · south until the map turns green',
-  'mcallen-dc':      'carry-on: one rearranged worldview',
-  'dc-cville':       'short hop · research bag packed',
-  'cville-london':   'red-eye · essay in the seat pocket',
-  'london-paris':    '45 minutes · four languages boarding',
-  'paris-sevilla':   'southbound · vowels warming up',
-  'sevilla-maranello': 'to engine country',
-  'maranello-vegas': 'long haul west · layover below ↓',
-  'vegas-sf':        'final approach · fog expected',
+  'bombay-nyc':        'one way',
+  'nyc-dc':            'the move south',
+  'dc-madrid':         'spanish, at the source',
+  'madrid-mcallen':    'back across the atlantic',
+  'mcallen-orlando':   'gulf hop',
+  'orlando-cville':    'up the coast',
+  'cville-london':     'red-eye east',
+  'london-paris':      '45 minutes',
+  'paris-maranello':   'to engine country',
+  'maranello-vegas':   'long haul west · layover below ↓',
+  'vegas-sf':          'final approach',
 }
 
 // the Cambridge layover aside, shown mid-flight on maranello → vegas
@@ -42,6 +44,6 @@ export const LEG_ASIDES = {
     tag: 'LAYOVER · BOS — CAMBRIDGE, MA',
     title: 'Exeter22 @ Harvard iLab',
     role: 'QUANTITATIVE TRADING INTERN · 2025',
-    body: 'Built the fund’s backtesting + deployment pipeline and synthetic ETFs, then pitched the models to the founder himself. Kept flying west.',
+    body: 'Built the fund’s backtesting and deployment pipeline plus synthetic ETFs, and pitched the models to the fund’s founder.',
   },
 }

@@ -146,7 +146,7 @@ export function stampCity(id, dateLabel = 'JUL 2026') {
     stamp.querySelector('.pp-stamp-date').textContent = dateLabel
   }
   const count = document.getElementById('passport-count')
-  count.textContent = `${visited.size}/12`
+  count.textContent = `${visited.size}/13`
   const btn = document.getElementById('passport-btn')
   btn.classList.remove('is-bump')
   void btn.offsetWidth
