@@ -515,8 +515,6 @@ function buildDCTimeline(globe, hopDots) {
   hop('hop-athletiq-secret', 40, 2)
   Z('secret', 40, 3)
   cardIn('secret', 42.5, 3)
-  tl.fromTo('.podium-col i', { scaleY: 0 }, { scaleY: 1, duration: 1.8, stagger: 0.45, ease: 'back.out(1.7)' }, 43.8)
-  tl.fromTo('.podium-kart', { scale: 0, rotate: -30 }, { scale: 1, rotate: 0, duration: 1.4, ease: 'back.out(2.4)' }, 46)
   cardOut('secret', 51, 2)
 
   hop('hop-secret-umd', 53, 2)
@@ -712,16 +710,12 @@ export function initLite({ globe, lenis, mode }) {
           })
         })
       }
-      if (e.target.matches('.podium')) {
-        gsap.fromTo('.podium-col i', { scaleY: 0 }, { scaleY: 1, duration: 0.8, stagger: 0.18, ease: 'back.out(1.7)' })
-        gsap.fromTo('.podium-kart', { scale: 0 }, { scale: 1, duration: 0.6, delay: 0.5, ease: 'back.out(2.4)' })
-      }
       if (e.target.matches('.honor-row')) {
         gsap.fromTo('.honor-stamp', { scale: 1.5, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.7, stagger: 0.16, ease: 'back.out(2)' })
       }
     })
   }, { threshold: 0.3 })
-  ;['.iq-dash', '.podium', '.honor-row'].forEach((s) => {
+  ;['.iq-dash', '.honor-row'].forEach((s) => {
     const el = document.querySelector(s)
     if (el) microIO.observe(el)
   })
