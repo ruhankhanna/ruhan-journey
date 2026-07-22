@@ -552,6 +552,43 @@ function buildDCTimeline(globe, hopDots) {
 
 /* ================= finale + arrival ================= */
 
+// split-flap tiles that shuffle letters and never resolve — the destination
+// is whichever campus comes next
+function buildFlaps() {
+  const row = document.getElementById('flap-row')
+  if (!row) return { start() {}, stop() {} }
+  const N = 8
+  const tiles = []
+  for (let i = 0; i < N; i++) {
+    const t = document.createElement('i')
+    t.className = 'flap'
+    t.textContent = '?'
+    row.appendChild(t)
+    tiles.push(t)
+  }
+  const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ????'
+  let iv = null
+  return {
+    start() {
+      if (iv) return
+      iv = setInterval(() => {
+        for (let k = 0; k < 2; k++) {
+          const t = tiles[Math.floor(Math.random() * N)]
+          t.textContent = CHARS[Math.floor(Math.random() * CHARS.length)]
+          t.classList.remove('is-tick')
+          void t.offsetWidth
+          t.classList.add('is-tick')
+        }
+      }, 110)
+    },
+    stop() {
+      clearInterval(iv)
+      iv = null
+      tiles.forEach((t) => { t.textContent = '?' })
+    },
+  }
+}
+
 function buildFinale(globe, totalKm) {
   const head = document.querySelector('.finale-head')
   const words = head.querySelectorAll('.word')
@@ -570,11 +607,31 @@ function buildFinale(globe, totalKm) {
     if (key === 'sf-dubai') continue
     tl.to(arc.mat.uniforms.uHead, { value: 1, duration: 12, ease: 'power1.in' }, 4)
   }
-  // tease the one arc that hasn't been flown yet
+  // the confirmed trip (Dubai) draws quietly...
   const teaser = globe.arcs.get('sf-dubai')
-  if (teaser) tl.to(teaser.mat.uniforms.uHead, { value: 1, duration: 26, ease: 'power1.inOut' }, 22)
+  if (teaser) tl.to(teaser.mat.uniforms.uHead, { value: 1, duration: 20, ease: 'power1.inOut' }, 20)
   const dubaiPin = globe.pins.get('dubai')
-  if (dubaiPin) tl.to(dubaiPin.group.scale, { x: 2.4, y: 2.4, z: 2.4, duration: 18, ease: 'back.out(2)' }, 34)
+  if (dubaiPin) tl.to(dubaiPin.group.scale, { x: 1.6, y: 1.6, z: 1.6, duration: 14, ease: 'back.out(2)' }, 30)
+
+  // ...while the real question fans out: unfinished arcs to unknown campuses
+  for (const [key, arc] of globe.arcs) {
+    if (!key.startsWith('mystery-')) continue
+    const i = parseInt(key.split('-')[1], 10)
+    tl.to(arc.mat.uniforms.uHead, {
+      value: 0.55 + (i % 3) * 0.12,
+      duration: 22,
+      ease: 'power1.inOut',
+    }, 30 + i * 4)
+  }
+
+  // shuffle the destination tiles while the finale is on screen
+  const flaps = buildFlaps()
+  ScrollTrigger.create({
+    trigger: '#finale',
+    start: 'top 75%',
+    end: 'bottom top',
+    onToggle: (self) => (self.isActive ? flaps.start() : flaps.stop()),
+  })
 
   tl.fromTo(head, { autoAlpha: 0 }, { autoAlpha: 1, duration: 4 }, 12)
   if (words.length) {
@@ -749,14 +806,30 @@ export function initLite({ globe, lenis, mode }) {
       },
     })
     const teaser = globe.arcs.get('sf-dubai')
-    if (teaser) {
-      ScrollTrigger.create({
-        trigger: '#finale', start: 'top 80%', end: 'bottom bottom', scrub: 1,
-        onUpdate: (self) => { teaser.mat.uniforms.uHead.value = self.progress },
-      })
-    }
+    ScrollTrigger.create({
+      trigger: '#finale', start: 'top 80%', end: 'bottom bottom', scrub: 1,
+      onUpdate: (self) => {
+        if (teaser) teaser.mat.uniforms.uHead.value = self.progress
+        for (const [key, arc] of globe.arcs) {
+          if (!key.startsWith('mystery-')) continue
+          const i = parseInt(key.split('-')[1], 10)
+          arc.mat.uniforms.uHead.value = self.progress * (0.55 + (i % 3) * 0.12)
+        }
+      },
+    })
   } else {
     odometer.set(total)
+  }
+
+  // the unresolved-destination tiles
+  const flaps = buildFlaps()
+  if (mode === 'reduced') {
+    flaps.stop() // static ????????
+  } else {
+    ScrollTrigger.create({
+      trigger: '#finale', start: 'top 80%', end: 'bottom top',
+      onToggle: (self) => (self.isActive ? flaps.start() : flaps.stop()),
+    })
   }
 
   ScrollTrigger.create({

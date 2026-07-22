@@ -90,6 +90,15 @@ async function boot() {
     }
     // the un-flown teaser leg, drawn in the finale
     globe.addArc('sf-dubai', byId.sf, byId.dubai, byId.sf.accent, byId.dubai.accent)
+    // unresolved arcs for the finale — routes to campuses unknown
+    const MYSTERY = [
+      { lat: 42.36, lon: -71.06 },
+      { lat: 41.31, lon: -72.92 },
+      { lat: 41.88, lon: -87.63 },
+      { lat: 34.05, lon: -118.24 },
+      { lat: 51.75, lon: -1.26 },
+    ]
+    MYSTERY.forEach((p, i) => globe.addArc(`mystery-${i}`, byId.sf, p, '#7fa0ff', '#f5c542'))
   } else {
     const flat = document.getElementById('flatmap-canvas')
     const route = [...ROUTE.map((id) => byId[id]), byId.dubai]

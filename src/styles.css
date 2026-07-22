@@ -838,6 +838,25 @@ body[data-accent='dubai'] { --accent: #f5c542; }
   margin: 14px 0 18px;
 }
 .finale-sub { color: var(--paper-dim); font-size: clamp(.95rem, 1.4vw, 1.15rem); line-height: 1.7; }
+.finale-note { margin-top: 22px; font-size: 12px; letter-spacing: .08em; color: rgba(244, 239, 226, 0.55); }
+.finale-note b { color: var(--sun); }
+
+/* the unresolved destination — split-flap tiles that never settle */
+.flap-row { display: flex; justify-content: center; gap: clamp(6px, 1vw, 12px); margin: 6px 0 26px; }
+.flap {
+  position: relative; display: grid; place-items: center; font-style: normal;
+  width: clamp(38px, 5.6vw, 74px); aspect-ratio: .74; border-radius: 10px;
+  background: linear-gradient(180deg, #1a2354 48%, #121a44 52%);
+  border: 1px solid #2b3a7a; box-shadow: 0 10px 26px rgba(0, 0, 0, 0.45);
+  font-family: var(--font-display); font-weight: 700;
+  font-size: clamp(1.5rem, 3.4vw, 3rem); color: var(--sun);
+}
+.flap::after {
+  content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px;
+  background: rgba(7, 10, 28, 0.65);
+}
+.flap.is-tick { animation: flapTick .14s ease-out; }
+@keyframes flapTick { 0% { transform: translateY(-2px) scaleY(.86); filter: brightness(1.5); } 100% { transform: none; } }
 
 .arrival {
   position: relative; z-index: 6; padding: 10vh clamp(20px, 6vw, 90px) 60px;
