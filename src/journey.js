@@ -411,13 +411,20 @@ function buildChapter(city, globe) {
   }
   tl.fromTo(card, { autoAlpha: 0, y: 80 }, { autoAlpha: 1, y: 0, duration: 7, ease: 'power3.out' }, 6)
 
+  // photos drop in like pinned polaroids beside the card
+  const pols = section.querySelectorAll('.ch-polaroids .ch-photo')
+  if (pols.length) {
+    tl.fromTo(pols, { autoAlpha: 0, y: 70, rotate: 9 },
+      { autoAlpha: 1, y: 0, rotate: (i) => (i ? 2.4 : -1.6), duration: 6, stagger: 2.2, ease: 'back.out(1.5)' }, 11)
+  }
+
   const v = VISUALS[city.id]?.(section)
   if (v) {
     v.paused(false)
     tl.add(v, 9)
   }
 
-  tl.to([head, card], { autoAlpha: 0, y: -60, duration: 6, ease: 'power2.in' }, 86)
+  tl.to([head, card, ...pols], { autoAlpha: 0, y: -60, duration: 6, ease: 'power2.in' }, 86)
   if (visual) tl.to(visual, { autoAlpha: 0, duration: 6, ease: 'power2.in' }, 87)
   tl.set({}, {}, 100)
 
