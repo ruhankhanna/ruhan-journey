@@ -191,10 +191,11 @@ html.mode-full #cursor { display: block; }
 @keyframes blink { 50% { opacity: 0.15; } }
 .hero-title {
   font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(3.4rem, 11.5vw, 10rem); line-height: 0.92;
+  font-size: clamp(3rem, 10vw, 8.5rem); line-height: 0.98;
   letter-spacing: -0.015em; text-transform: uppercase; margin-bottom: 26px;
 }
-.ht-line { display: block; overflow: hidden; }
+/* padding keeps descenders (J, Y) and the outline stroke inside the reveal mask */
+.ht-line { display: block; overflow: hidden; padding: 0.02em 0.1em 0.14em 0.02em; margin-bottom: -0.1em; }
 .ht-line--outline .char { color: transparent; -webkit-text-stroke: 2px var(--paper); }
 .char { display: inline-block; will-change: transform; }
 .hero-sub { font-size: clamp(1rem, 1.6vw, 1.3rem); color: var(--paper-dim); margin-bottom: 42px; }
@@ -328,7 +329,7 @@ html.mode-full #cursor { display: block; }
 .card-kicker { font-size: 9.5px; letter-spacing: .32em; color: var(--acid); margin-bottom: 14px; }
 .card-kicker--center { text-align: center; }
 .dc-title {
-  font-family: var(--font-display); font-weight: 700; font-size: clamp(2.6rem, 7.5vw, 6.4rem);
+  font-family: var(--font-display); font-weight: 700; font-size: clamp(2.4rem, 6.2vw, 5.4rem);
   line-height: .95; text-transform: uppercase; margin-bottom: 18px;
 }
 .card-title {
@@ -968,15 +969,19 @@ html.mode-reduced .nyc-ticker span { animation: none; }
    PHOTOS + CONTENT LINKS
    ========================================================================== */
 
-/* pasted-in travel photos */
-.ch-photo { margin-top: 18px; transform: rotate(-1.2deg); transition: transform .35s cubic-bezier(.3,1.6,.4,1); }
+/* pasted-in travel photos — cropped to snapshot height so cards fit the viewport */
+.ch-photo { margin-top: 16px; transform: rotate(-1.2deg); transition: transform .35s cubic-bezier(.3,1.6,.4,1); }
 .ch-photo--tilt2 { transform: rotate(1.4deg); }
 .ch-photo:hover { transform: rotate(0deg) scale(1.02); }
 .ch-photo .frame {
-  background: var(--paper); padding: 8px 8px 7px; border-radius: 8px;
+  background: var(--paper); padding: 7px 7px 6px; border-radius: 8px;
   box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45);
 }
-.ch-photo img { width: 100%; display: block; border-radius: 4px; }
+.ch-photo img {
+  width: 100%; display: block; border-radius: 4px;
+  height: clamp(140px, 22vh, 240px); object-fit: cover; object-position: center 28%;
+}
+.photo-grid .ch-photo img { height: clamp(110px, 16vh, 180px); }
 .ch-photo figcaption {
   font-size: 8.5px; font-weight: 700; letter-spacing: .22em; color: #8a8371;
   padding-top: 7px; text-align: center; text-transform: uppercase;
@@ -996,6 +1001,28 @@ html.mode-reduced .nyc-ticker span { animation: none; }
 .link-pill:hover { transform: translateY(-3px) rotate(-1deg); box-shadow: 0 10px 22px rgba(198, 242, 78, 0.25); }
 .link-pill:active { transform: translateY(-1px); }
 
+/* pinned cards must never run off screen — cap height, thin scrollbar as a
+   last resort, and tighten everything on short viewports */
+.ch-card, .dc-card {
+  max-height: 80vh; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: rgba(127, 160, 255, 0.35) transparent;
+}
+.ch-card::-webkit-scrollbar, .dc-card::-webkit-scrollbar { width: 5px; }
+.ch-card::-webkit-scrollbar-thumb, .dc-card::-webkit-scrollbar-thumb { background: rgba(127, 160, 255, 0.35); border-radius: 4px; }
+
+@media (max-height: 940px) {
+  .ch-card, .dc-card { padding: 22px 24px 20px; }
+  .card-body { font-size: 13.5px; margin-bottom: 10px; }
+  .img-slot { height: 80px; margin-top: 12px; }
+  .iq-dash { margin-top: 12px; padding: 12px; }
+  .iq-bars { height: 64px; }
+  .tennis-court { height: 110px; }
+}
+
 @media (max-width: 860px) {
   .photo-grid { grid-template-columns: 1fr; }
+  .ch-card, .dc-card { max-height: none; overflow: visible; }
+  .ch-photo img { height: auto; max-height: 320px; }
+  .photo-grid .ch-photo img { height: auto; max-height: 280px; }
 }
+html.mode-reduced .ch-card, html.mode-reduced .dc-card { max-height: none; overflow: visible; }
